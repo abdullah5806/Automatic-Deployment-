@@ -1,0 +1,35 @@
+name: Deploy Static Site to GitHub Pages
+
+# 1. The Trigger: This tells the pipeline to run whenever code is pushed to the 'main' branch
+on:
+  push:
+    branches: ["main"]
+
+# 2. Permissions needed to deploy to GitHub Pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# 3. The Jobs: The actual steps the server takes
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: "./public" # Uploads the entire repository
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
